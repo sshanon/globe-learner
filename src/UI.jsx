@@ -4,6 +4,8 @@ import { getPointsForLevel } from './countryData'
 const UI = () => {
   const { currentLevel, currentCountry, score, feedback, setLevel, resetScore, nextQuestion } = useStore()
 
+  const VERSION = 'v0.4'
+
   const levelNames = {
     1: 'Continents',
     2: 'Continent Classification',
@@ -31,6 +33,20 @@ const UI = () => {
       color: 'white',
       zIndex: 1000
     }}>
+      {/* Version indicator */}
+      <div style={{
+        position: 'absolute',
+        top: '8px',
+        right: '8px',
+        fontSize: '11px',
+        background: 'rgba(0,0,0,0.6)',
+        padding: '4px 8px',
+        borderRadius: '4px',
+        opacity: 0.5
+      }}>
+        {VERSION}
+      </div>
+
       {/* Top bar - Question prompt */}
       <div style={{
         padding: '16px',
