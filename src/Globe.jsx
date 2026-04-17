@@ -194,7 +194,14 @@ const GlobeScene = () => {
 
   const handleCountryClick = (countryName) => {
     if (feedback?.correct) return // Prevent clicks during feedback
-    if (currentLevel === 4 || currentLevel === 3 || currentLevel === 2) {
+
+    if (currentLevel === 3) {
+      // Level 3: Check if clicked country's region matches
+      const clickedCountryData = countries[countryName]
+      if (clickedCountryData && clickedCountryData.region) {
+        checkRegion(clickedCountryData.region)
+      }
+    } else if (currentLevel === 4) {
       checkAnswer(countryName)
     }
   }
@@ -250,14 +257,20 @@ const GlobeScene = () => {
         </>
       )}
 
-      {/* Level 3: Show regions */}
-      {currentLevel === 3 && Object.values(REGIONS).map(region => (
-        <RegionMarker
-          key={region}
-          region={region}
-          onRegionClick={handleRegionClick}
-        />
-      ))}
+      {/* Level 3: Show country markers (level 3 + level 4) */}
+      {currentLevel === 3 && Object.entries(countries)
+        .filter(([_, data]) => data.level === 3 || data.level === 4)
+        .map(([name, data]) => (
+          <CountryMarker
+            key={name}
+            name={name}
+            lat={data.lat}
+            lon={data.lon}
+            onCountryClick={handleCountryClick}
+            isTarget={name === currentCountry}
+            showFeedback={feedback !== null}
+          />
+        ))}
 
       {/* Level 4: Show country markers */}
       {currentLevel === 4 && Object.entries(countries)
