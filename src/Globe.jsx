@@ -178,12 +178,8 @@ const Earth = () => {
 
   return (
     <Sphere ref={meshRef} args={[2, 64, 64]}>
-      <meshPhongMaterial
-        color="#2a9d8f"
-        emissive="#1a5f5a"
-        emissiveIntensity={0.3}
-        shininess={30}
-        specular="#ffffff"
+      <meshBasicMaterial
+        color="#1a5f5a"
       />
     </Sphere>
   )
@@ -222,9 +218,7 @@ const GlobeScene = () => {
 
   return (
     <>
-      <ambientLight intensity={0.8} />
-      <directionalLight position={[10, 10, 5]} intensity={1.5} />
-      <pointLight position={[-10, -10, -5]} intensity={0.5} />
+      <ambientLight intensity={1.2} />
       <Earth />
 
       {/* Always show equator */}
