@@ -46,7 +46,7 @@ const CountryBorder = ({ coordinates }) => {
           itemSize={3}
         />
       </bufferGeometry>
-      <lineBasicMaterial color="#ffffff" opacity={0.3} transparent linewidth={1} />
+      <lineBasicMaterial color="#ffffff" opacity={0.15} transparent linewidth={1} />
     </line>
   )
 }
@@ -80,7 +80,7 @@ const ContinentBorder = ({ coordinates }) => {
           itemSize={3}
         />
       </bufferGeometry>
-      <lineBasicMaterial color="#00ffff" opacity={0.6} transparent linewidth={2} />
+      <lineBasicMaterial color="#00ffff" opacity={0.25} transparent linewidth={1} />
     </line>
   )
 }

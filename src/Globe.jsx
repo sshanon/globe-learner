@@ -29,7 +29,7 @@ const CountryMarker = ({ name, lat, lon, onCountryClick, isTarget, showFeedback 
       onPointerOver={() => setHovered(true)}
       onPointerOut={() => setHovered(false)}
     >
-      <sphereGeometry args={[0.03, 16, 16]} />
+      <sphereGeometry args={[0.025, 12, 12]} />
       <meshBasicMaterial
         color={
           showFeedback && isTarget ? '#00ff00' :
@@ -38,14 +38,14 @@ const CountryMarker = ({ name, lat, lon, onCountryClick, isTarget, showFeedback 
         }
       />
       {(hovered || (showFeedback && isTarget)) && (
-        <Html distanceFactor={8}>
+        <Html distanceFactor={15}>
           <div style={{
             background: 'rgba(0,0,0,0.8)',
             color: 'white',
-            padding: '4px 8px',
-            borderRadius: '4px',
+            padding: '2px 6px',
+            borderRadius: '3px',
             whiteSpace: 'nowrap',
-            fontSize: '12px',
+            fontSize: '10px',
             pointerEvents: 'none'
           }}>
             {name}
@@ -80,20 +80,20 @@ const ContinentMarker = ({ continent, onContinentClick }) => {
       onPointerOver={() => setHovered(true)}
       onPointerOut={() => setHovered(false)}
     >
-      <sphereGeometry args={[0.15, 16, 16]} />
+      <sphereGeometry args={[0.08, 16, 16]} />
       <meshBasicMaterial
         color={hovered ? '#ffff00' : '#00aaff'}
         transparent
-        opacity={0.6}
+        opacity={0.5}
       />
-      <Html distanceFactor={8}>
+      <Html distanceFactor={15}>
         <div style={{
           background: 'rgba(0,100,200,0.8)',
           color: 'white',
-          padding: '6px 12px',
-          borderRadius: '4px',
+          padding: '3px 8px',
+          borderRadius: '3px',
           whiteSpace: 'nowrap',
-          fontSize: '14px',
+          fontSize: '11px',
           fontWeight: 'bold',
           pointerEvents: 'none'
         }}>
@@ -132,20 +132,20 @@ const RegionMarker = ({ region, onRegionClick }) => {
       onPointerOver={() => setHovered(true)}
       onPointerOut={() => setHovered(false)}
     >
-      <sphereGeometry args={[0.12, 16, 16]} />
+      <sphereGeometry args={[0.07, 16, 16]} />
       <meshBasicMaterial
         color={hovered ? '#ffff00' : '#ff6600'}
         transparent
-        opacity={0.6}
+        opacity={0.5}
       />
-      <Html distanceFactor={8}>
+      <Html distanceFactor={15}>
         <div style={{
           background: 'rgba(200,100,0,0.8)',
           color: 'white',
-          padding: '5px 10px',
-          borderRadius: '4px',
+          padding: '3px 8px',
+          borderRadius: '3px',
           whiteSpace: 'nowrap',
-          fontSize: '12px',
+          fontSize: '10px',
           fontWeight: 'bold',
           pointerEvents: 'none'
         }}>
@@ -179,7 +179,7 @@ const Equator = () => {
           itemSize={3}
         />
       </bufferGeometry>
-      <lineBasicMaterial color="#ffaa00" opacity={0.5} transparent linewidth={2} />
+      <lineBasicMaterial color="#ffaa00" opacity={0.3} transparent linewidth={1} />
     </line>
   )
 }
@@ -188,13 +188,13 @@ const OceanLabel = ({ name, lat, lon }) => {
   const position = latLonToVector3(lat, lon, 2.05)
 
   return (
-    <Html position={position} distanceFactor={10}>
+    <Html position={position} distanceFactor={20}>
       <div style={{
         color: '#4da6ff',
-        fontSize: '14px',
-        fontWeight: 'bold',
+        fontSize: '10px',
+        fontWeight: 'normal',
         fontStyle: 'italic',
-        opacity: 0.6,
+        opacity: 0.4,
         pointerEvents: 'none',
         textShadow: '1px 1px 2px rgba(0,0,0,0.8)',
         whiteSpace: 'nowrap'

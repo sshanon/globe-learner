@@ -28,22 +28,25 @@ const UI = () => {
       pointerEvents: 'none',
       display: 'flex',
       flexDirection: 'column',
-      color: 'white'
+      color: 'white',
+      zIndex: 1000
     }}>
       {/* Top bar - Question prompt */}
       <div style={{
-        padding: '20px',
-        background: 'linear-gradient(to bottom, rgba(0,0,0,0.8), transparent)',
-        textAlign: 'center'
+        padding: '16px',
+        background: 'rgba(0,0,0,0.85)',
+        textAlign: 'center',
+        borderBottom: '2px solid rgba(255,255,255,0.1)'
       }}>
-        <div style={{ fontSize: '14px', opacity: 0.7, marginBottom: '8px' }}>
+        <div style={{ fontSize: '12px', opacity: 0.6, marginBottom: '6px' }}>
           {levelNames[currentLevel]} • {levelPoints[currentLevel]} points
         </div>
         {currentCountry && (
           <div style={{
-            fontSize: '24px',
+            fontSize: '20px',
             fontWeight: 'bold',
-            textShadow: '2px 2px 4px rgba(0,0,0,0.8)'
+            textShadow: '2px 2px 4px rgba(0,0,0,1)',
+            color: '#ffffff'
           }}>
             {currentLevel === 1 ? `Tap ${currentCountry}` :
              currentLevel === 2 ? `Which continent is ${currentCountry} in?` :
