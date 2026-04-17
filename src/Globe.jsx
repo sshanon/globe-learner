@@ -4,6 +4,7 @@ import { OrbitControls, Sphere, Html } from '@react-three/drei'
 import * as THREE from 'three'
 import { countries, CONTINENTS, REGIONS } from './countryData'
 import useStore from './store'
+import BorderRenderer from './BorderRenderer'
 
 // Convert lat/lon to 3D coordinates on sphere
 const latLonToVector3 = (lat, lon, radius = 2) => {
@@ -155,6 +156,55 @@ const RegionMarker = ({ region, onRegionClick }) => {
   )
 }
 
+const Equator = () => {
+  const points = []
+  const radius = 2.02
+
+  // Create circle of points around equator
+  for (let i = 0; i <= 360; i += 2) {
+    const theta = (i + 180) * (Math.PI / 180)
+    const x = -(radius * Math.cos(theta))
+    const z = radius * Math.sin(theta)
+    const y = 0
+    points.push(new THREE.Vector3(x, y, z))
+  }
+
+  return (
+    <line>
+      <bufferGeometry>
+        <bufferAttribute
+          attach="attributes-position"
+          count={points.length}
+          array={new Float32Array(points.flatMap(p => [p.x, p.y, p.z]))}
+          itemSize={3}
+        />
+      </bufferGeometry>
+      <lineBasicMaterial color="#ffaa00" opacity={0.5} transparent linewidth={2} />
+    </line>
+  )
+}
+
+const OceanLabel = ({ name, lat, lon }) => {
+  const position = latLonToVector3(lat, lon, 2.05)
+
+  return (
+    <Html position={position} distanceFactor={10}>
+      <div style={{
+        color: '#4da6ff',
+        fontSize: '14px',
+        fontWeight: 'bold',
+        fontStyle: 'italic',
+        opacity: 0.6,
+        pointerEvents: 'none',
+        textShadow: '1px 1px 2px rgba(0,0,0,0.8)',
+        whiteSpace: 'nowrap'
+      }}>
+        {name}
+      </div>
+    </Html>
+  )
+}
+
 const Earth = () => {
   const meshRef = useRef()
 
@@ -208,6 +258,19 @@ const GlobeScene = () => {
       <directionalLight position={[10, 10, 5]} intensity={1.5} />
       <pointLight position={[-10, -10, -5]} intensity={0.5} />
       <Earth />
+
+      {/* Always show equator and ocean labels */}
+      <Equator />
+      <OceanLabel name="Pacific Ocean" lat={0} lon={-170} />
+      <OceanLabel name="Atlantic Ocean" lat={0} lon={-30} />
+      <OceanLabel name="Indian Ocean" lat={-20} lon={80} />
+      <OceanLabel name="Arctic Ocean" lat={80} lon={0} />
+      <OceanLabel name="Southern Ocean" lat={-65} lon={0} />
+
+      {/* Show borders based on level */}
+      {(currentLevel === 1 || currentLevel === 2) && <BorderRenderer type="continents" />}
+      {currentLevel === 3 && <BorderRenderer type="countries" />}
+      {currentLevel === 4 && <BorderRenderer type="countries" />}
 
       {/* Level 1: Show continents */}
       {currentLevel === 1 && Object.values(CONTINENTS).map(continent => (
