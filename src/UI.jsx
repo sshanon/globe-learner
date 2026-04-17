@@ -4,7 +4,7 @@ import { getPointsForLevel } from './countryData'
 const UI = () => {
   const { currentLevel, currentCountry, score, feedback, setLevel, resetScore, nextQuestion } = useStore()
 
-  const VERSION = 'v0.4'
+  const VERSION = 'v0.5'
 
   const levelNames = {
     1: 'Continents',
@@ -64,10 +64,10 @@ const UI = () => {
             textShadow: '2px 2px 4px rgba(0,0,0,1)',
             color: '#ffffff'
           }}>
-            {currentLevel === 1 ? `Tap ${currentCountry}` :
+            {currentLevel === 1 ? `Where is ${currentCountry}?` :
              currentLevel === 2 ? `Which continent is ${currentCountry} in?` :
              currentLevel === 3 ? `Which region is ${currentCountry} in?` :
-             `Tap ${currentCountry}`}
+             `Where is ${currentCountry}?`}
           </div>
         )}
       </div>

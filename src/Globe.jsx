@@ -29,29 +29,16 @@ const CountryMarker = ({ name, lat, lon, onCountryClick, isTarget, showFeedback 
       onPointerOver={() => setHovered(true)}
       onPointerOut={() => setHovered(false)}
     >
-      <sphereGeometry args={[0.025, 12, 12]} />
+      <sphereGeometry args={[0.04, 12, 12]} />
       <meshBasicMaterial
         color={
           showFeedback && isTarget ? '#00ff00' :
           hovered ? '#ffff00' :
-          '#ff0000'
+          '#ffffff'
         }
+        opacity={showFeedback && isTarget ? 1 : hovered ? 0.8 : 0.4}
+        transparent
       />
-      {(hovered || (showFeedback && isTarget)) && (
-        <Html distanceFactor={15}>
-          <div style={{
-            background: 'rgba(0,0,0,0.8)',
-            color: 'white',
-            padding: '2px 6px',
-            borderRadius: '3px',
-            whiteSpace: 'nowrap',
-            fontSize: '10px',
-            pointerEvents: 'none'
-          }}>
-            {name}
-          </div>
-        </Html>
-      )}
     </mesh>
   )
 }
@@ -80,26 +67,13 @@ const ContinentMarker = ({ continent, onContinentClick }) => {
       onPointerOver={() => setHovered(true)}
       onPointerOut={() => setHovered(false)}
     >
-      <sphereGeometry args={[0.08, 16, 16]} />
+      <sphereGeometry args={[0.3, 16, 16]} />
       <meshBasicMaterial
-        color={hovered ? '#ffff00' : '#00aaff'}
+        color="#00aaff"
         transparent
-        opacity={0.5}
+        opacity={0}
+        visible={false}
       />
-      <Html distanceFactor={15}>
-        <div style={{
-          background: 'rgba(0,100,200,0.8)',
-          color: 'white',
-          padding: '3px 8px',
-          borderRadius: '3px',
-          whiteSpace: 'nowrap',
-          fontSize: '11px',
-          fontWeight: 'bold',
-          pointerEvents: 'none'
-        }}>
-          {continent}
-        </div>
-      </Html>
     </mesh>
   )
 }
@@ -132,26 +106,13 @@ const RegionMarker = ({ region, onRegionClick }) => {
       onPointerOver={() => setHovered(true)}
       onPointerOut={() => setHovered(false)}
     >
-      <sphereGeometry args={[0.07, 16, 16]} />
+      <sphereGeometry args={[0.25, 16, 16]} />
       <meshBasicMaterial
-        color={hovered ? '#ffff00' : '#ff6600'}
+        color="#ff6600"
         transparent
-        opacity={0.5}
+        opacity={0}
+        visible={false}
       />
-      <Html distanceFactor={15}>
-        <div style={{
-          background: 'rgba(200,100,0,0.8)',
-          color: 'white',
-          padding: '3px 8px',
-          borderRadius: '3px',
-          whiteSpace: 'nowrap',
-          fontSize: '10px',
-          fontWeight: 'bold',
-          pointerEvents: 'none'
-        }}>
-          {region}
-        </div>
-      </Html>
     </mesh>
   )
 }
@@ -259,13 +220,8 @@ const GlobeScene = () => {
       <pointLight position={[-10, -10, -5]} intensity={0.5} />
       <Earth />
 
-      {/* Always show equator and ocean labels */}
+      {/* Always show equator */}
       <Equator />
-      <OceanLabel name="Pacific Ocean" lat={0} lon={-170} />
-      <OceanLabel name="Atlantic Ocean" lat={0} lon={-30} />
-      <OceanLabel name="Indian Ocean" lat={-20} lon={80} />
-      <OceanLabel name="Arctic Ocean" lat={80} lon={0} />
-      <OceanLabel name="Southern Ocean" lat={-65} lon={0} />
 
       {/* Show borders based on level */}
       {(currentLevel === 1 || currentLevel === 2) && <BorderRenderer type="continents" />}

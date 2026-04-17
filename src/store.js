@@ -1,5 +1,5 @@
 import { create } from 'zustand'
-import { getRandomCountry, getPointsForLevel, countries } from './countryData'
+import { getRandomCountry, getPointsForLevel, countries, CONTINENTS } from './countryData'
 
 const useStore = create((set, get) => ({
   // Game state
@@ -16,8 +16,16 @@ const useStore = create((set, get) => ({
 
   nextQuestion: () => {
     const { currentLevel } = get()
-    const country = getRandomCountry(currentLevel)
-    set({ currentCountry: country, feedback: null })
+
+    if (currentLevel === 1) {
+      // For Level 1, pick a random continent
+      const continents = Object.values(CONTINENTS)
+      const randomContinent = continents[Math.floor(Math.random() * continents.length)]
+      set({ currentCountry: randomContinent, feedback: null })
+    } else {
+      const country = getRandomCountry(currentLevel)
+      set({ currentCountry: country, feedback: null })
+    }
   },
 
   checkAnswer: (clickedCountry) => {
@@ -41,8 +49,18 @@ const useStore = create((set, get) => ({
 
   checkContinent: (clickedContinent) => {
     const { currentCountry, currentLevel, score } = get()
-    const correctContinent = countries[currentCountry].continent
-    const isCorrect = clickedContinent === correctContinent
+
+    let isCorrect, correctAnswer
+
+    if (currentLevel === 1) {
+      // Level 1: Direct continent matching
+      isCorrect = clickedContinent === currentCountry
+      correctAnswer = currentCountry
+    } else {
+      // Level 2: Country -> Continent matching
+      correctAnswer = countries[currentCountry].continent
+      isCorrect = clickedContinent === correctAnswer
+    }
 
     if (isCorrect) {
       const points = getPointsForLevel(currentLevel)
@@ -54,7 +72,7 @@ const useStore = create((set, get) => ({
         get().nextQuestion()
       }, 1500)
     } else {
-      set({ feedback: { correct: false, country: currentCountry, correctAnswer: correctContinent } })
+      set({ feedback: { correct: false, country: currentCountry, correctAnswer } })
     }
   },
 
