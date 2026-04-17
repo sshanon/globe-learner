@@ -16,7 +16,7 @@ const App = () => {
       width: '100vw',
       height: '100vh',
       position: 'relative',
-      background: '#000'
+      background: 'linear-gradient(to bottom, #0a1929, #001e3c)'
     }}>
       <Globe />
       <UI />

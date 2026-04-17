@@ -167,10 +167,12 @@ const Earth = () => {
 
   return (
     <Sphere ref={meshRef} args={[2, 64, 64]}>
-      <meshStandardMaterial
-        color="#1a4d2e"
-        roughness={0.8}
-        metalness={0.2}
+      <meshPhongMaterial
+        color="#2a9d8f"
+        emissive="#1a5f5a"
+        emissiveIntensity={0.3}
+        shininess={30}
+        specular="#ffffff"
       />
     </Sphere>
   )
@@ -202,8 +204,9 @@ const GlobeScene = () => {
 
   return (
     <>
-      <ambientLight intensity={0.5} />
-      <directionalLight position={[5, 5, 5]} intensity={1} />
+      <ambientLight intensity={0.8} />
+      <directionalLight position={[10, 10, 5]} intensity={1.5} />
+      <pointLight position={[-10, -10, -5]} intensity={0.5} />
       <Earth />
 
       {/* Level 1: Show continents */}
@@ -266,7 +269,11 @@ const GlobeScene = () => {
 const Globe = () => {
   return (
     <div style={{ width: '100%', height: '100%' }}>
-      <Canvas camera={{ position: [0, 0, 5], fov: 45 }}>
+      <Canvas
+        camera={{ position: [0, 0, 5], fov: 50 }}
+        style={{ background: 'transparent' }}
+      >
+        <color attach="background" args={['#001e3c']} />
         <GlobeScene />
       </Canvas>
     </div>
