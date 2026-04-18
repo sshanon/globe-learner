@@ -66,7 +66,7 @@ const CountryBorder = ({ coordinates }) => {
               itemSize={3}
             />
           </bufferGeometry>
-          <lineBasicMaterial color="#ffffff" opacity={0.15} transparent />
+          <lineBasicMaterial color="#ffffff" opacity={0.7} transparent />
         </line>
       ))}
     </group>
@@ -121,14 +121,14 @@ const ContinentBorder = ({ coordinates }) => {
               itemSize={3}
             />
           </bufferGeometry>
-          <lineBasicMaterial color="#00ffff" opacity={1.0} transparent={false} />
+          <lineBasicMaterial color="#00ffff" opacity={0.9} transparent />
         </line>
       ))}
     </group>
   )
 }
 
-export const BorderRenderer = ({ type = 'countries', showContinentSeparation = false }) => {
+export const BorderRenderer = ({ type = 'countries', brightness = 'high' }) => {
   const [geoData, setGeoData] = useState(null)
 
   useEffect(() => {
@@ -148,7 +148,7 @@ export const BorderRenderer = ({ type = 'countries', showContinentSeparation = f
   if (!geoData) return null
 
   if (type === 'continents') {
-    // For continent level, show ALL borders but make them very bright
+    // For continent level, show ALL borders brightly to show land masses
     return (
       <group>
         {geoData.features.map((feature, idx) => (

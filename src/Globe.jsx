@@ -86,7 +86,7 @@ const ContinentMarker = ({ continent, onContinentClick }) => {
       onPointerOver={() => setHovered(true)}
       onPointerOut={() => setHovered(false)}
     >
-      <sphereGeometry args={[0.3, 16, 16]} />
+      <sphereGeometry args={[0.8, 16, 16]} />
       <meshBasicMaterial
         color="#00aaff"
         transparent
@@ -223,9 +223,10 @@ const GlobeScene = () => {
       <Equator />
 
       {/* Show borders based on level */}
-      {(currentLevel === 1 || currentLevel === 2) && <BorderRenderer type="continents" showContinentSeparation />}
-      {currentLevel === 3 && <BorderRenderer type="countries" />}
-      {currentLevel === 4 && <BorderRenderer type="countries" />}
+      {currentLevel === 1 && <BorderRenderer type="continents" brightness="high" />}
+      {currentLevel === 2 && <BorderRenderer type="continents" brightness="high" />}
+      {currentLevel === 3 && <BorderRenderer type="countries" brightness="high" />}
+      {currentLevel === 4 && <BorderRenderer type="countries" brightness="high" />}
 
       {/* Level 1: Show continents */}
       {currentLevel === 1 && Object.values(CONTINENTS).map(continent => (
@@ -249,7 +250,7 @@ const GlobeScene = () => {
         </>
       )}
 
-      {/* Level 3: Show country markers (level 3 + level 4) */}
+      {/* Level 3: Invisible clickable areas */}
       {currentLevel === 3 && Object.entries(countries)
         .filter(([_, data]) => data.level === 3 || data.level === 4)
         .map(([name, data]) => (
@@ -261,6 +262,7 @@ const GlobeScene = () => {
             onCountryClick={handleCountryClick}
             isTarget={name === currentCountry}
             showFeedback={feedback !== null}
+            visible={false}
           />
         ))}
 
