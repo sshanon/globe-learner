@@ -166,7 +166,6 @@ const Equator = () => {
 }
 
 const Earth = () => {
-  const meshRef = useRef()
   const [texture, setTexture] = useState(null)
 
   // Load texture
@@ -185,15 +184,8 @@ const Earth = () => {
     )
   }, [])
 
-  // Slow auto-rotation
-  useFrame(() => {
-    if (meshRef.current) {
-      meshRef.current.rotation.y += 0.001
-    }
-  })
-
   return (
-    <Sphere ref={meshRef} args={[2, 64, 64]}>
+    <Sphere args={[2, 64, 64]}>
       {texture ? (
         <meshBasicMaterial map={texture} />
       ) : (
@@ -234,22 +226,36 @@ const GlobeScene = () => {
     }
   }
 
+  // Create a rotating ref for everything
+  const globeGroupRef = useRef()
+
+  // Slow auto-rotation for the whole group
+  useFrame(() => {
+    if (globeGroupRef.current) {
+      globeGroupRef.current.rotation.y += 0.001
+    }
+  })
+
   return (
     <>
       <ambientLight intensity={1.2} />
-      <Earth />
 
-      {/* Always show equator */}
-      <Equator />
+      {/* Group everything together so they rotate as one */}
+      <group ref={globeGroupRef}>
+        <Earth />
 
-      {/* Show borders based on level */}
-      {currentLevel === 1 && <BorderRenderer type="continents" brightness="high" />}
-      {currentLevel === 2 && <BorderRenderer type="continents" brightness="high" />}
-      {currentLevel === 3 && <BorderRenderer type="countries" brightness="high" />}
-      {currentLevel === 4 && <BorderRenderer type="countries" brightness="high" />}
+        {/* Always show equator */}
+        <Equator />
 
-      {/* Always show continent boundaries (thick orange outlines) */}
-      <ContinentBoundaries />
+        {/* Show borders based on level */}
+        {currentLevel === 1 && <BorderRenderer type="continents" brightness="high" />}
+        {currentLevel === 2 && <BorderRenderer type="continents" brightness="high" />}
+        {currentLevel === 3 && <BorderRenderer type="countries" brightness="high" />}
+        {currentLevel === 4 && <BorderRenderer type="countries" brightness="high" />}
+
+        {/* Always show continent boundaries (thick orange outlines) */}
+        <ContinentBoundaries />
+      </group>
 
       {/* Level 1: Show continents */}
       {currentLevel === 1 && Object.values(CONTINENTS).map(continent => (
