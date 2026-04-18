@@ -164,27 +164,6 @@ const Equator = () => {
   )
 }
 
-const ContinentLabel = ({ name, lat, lon }) => {
-  const position = latLonToVector3(lat, lon, 2.05)
-
-  return (
-    <Html position={position} distanceFactor={35}>
-      <div style={{
-        color: '#00ddff',
-        fontSize: '9px',
-        fontWeight: 'bold',
-        opacity: 0.4,
-        pointerEvents: 'none',
-        textShadow: '2px 2px 4px rgba(0,0,0,0.9)',
-        whiteSpace: 'nowrap',
-        letterSpacing: '0.5px'
-      }}>
-        {name}
-      </div>
-    </Html>
-  )
-}
-
 const Earth = () => {
   const meshRef = useRef()
 
@@ -243,16 +222,8 @@ const GlobeScene = () => {
       {/* Always show equator */}
       <Equator />
 
-      {/* Continent labels for orientation */}
-      <ContinentLabel name="אפריקה" lat={5} lon={20} />
-      <ContinentLabel name="אסיה" lat={45} lon={90} />
-      <ContinentLabel name="אירופה" lat={55} lon={20} />
-      <ContinentLabel name="צפון אמריקה" lat={50} lon={-100} />
-      <ContinentLabel name="דרום אמריקה" lat={-15} lon={-60} />
-      <ContinentLabel name="אוקיאניה" lat={-25} lon={135} />
-
       {/* Show borders based on level */}
-      {(currentLevel === 1 || currentLevel === 2) && <BorderRenderer type="continents" />}
+      {(currentLevel === 1 || currentLevel === 2) && <BorderRenderer type="continents" showContinentSeparation />}
       {currentLevel === 3 && <BorderRenderer type="countries" />}
       {currentLevel === 4 && <BorderRenderer type="countries" />}
 

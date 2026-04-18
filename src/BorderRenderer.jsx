@@ -66,7 +66,7 @@ const CountryBorder = ({ coordinates }) => {
               itemSize={3}
             />
           </bufferGeometry>
-          <lineBasicMaterial color="#ffffff" opacity={0.25} transparent />
+          <lineBasicMaterial color="#ffffff" opacity={0.15} transparent />
         </line>
       ))}
     </group>
@@ -121,24 +121,24 @@ const ContinentBorder = ({ coordinates }) => {
               itemSize={3}
             />
           </bufferGeometry>
-          <lineBasicMaterial color="#00ffff" opacity={0.9} transparent linewidth={4} />
+          <lineBasicMaterial color="#00ffff" opacity={1.0} transparent={false} />
         </line>
       ))}
     </group>
   )
 }
 
-export const BorderRenderer = ({ type = 'countries', showContinentBorders = false }) => {
+export const BorderRenderer = ({ type = 'countries', showContinentSeparation = false }) => {
   const [geoData, setGeoData] = useState(null)
 
   useEffect(() => {
-    // Try Natural Earth for better accuracy
-    fetch('https://raw.githubusercontent.com/nvkelso/natural-earth-vector/master/geojson/ne_110m_admin_0_countries.geojson')
+    // Use better quality geojson - ne_50m is medium resolution (better than 110m)
+    fetch('https://raw.githubusercontent.com/nvkelso/natural-earth-vector/master/geojson/ne_50m_admin_0_countries.geojson')
       .then(res => res.json())
       .then(geojson => setGeoData(geojson))
       .catch(() => {
-        // Fallback to previous source
-        fetch('https://raw.githubusercontent.com/datasets/geo-countries/master/data/countries.geojson')
+        // Fallback to 110m
+        fetch('https://raw.githubusercontent.com/nvkelso/natural-earth-vector/master/geojson/ne_110m_admin_0_countries.geojson')
           .then(res => res.json())
           .then(geojson => setGeoData(geojson))
           .catch(err => console.error('Failed to load borders:', err))
@@ -147,30 +147,16 @@ export const BorderRenderer = ({ type = 'countries', showContinentBorders = fals
 
   if (!geoData) return null
 
-  // Group countries by continent for coloring
-  const continentColors = {
-    'Africa': '#ff6b6b33',
-    'Asia': '#4ecdc433',
-    'Europe': '#45b7d133',
-    'North America': '#ffd93d33',
-    'South America': '#95e1d333',
-    'Oceania': '#f38181333'
-  }
-
   if (type === 'continents') {
+    // For continent level, show ALL borders but make them very bright
     return (
       <group>
-        {geoData.features.map((feature, idx) => {
-          const continent = feature.properties?.CONTINENT || feature.properties?.continent
-          const color = continentColors[continent] || '#ffffff33'
-
-          return (
-            <ContinentBorder
-              key={idx}
-              coordinates={feature.geometry.coordinates}
-            />
-          )
-        })}
+        {geoData.features.map((feature, idx) => (
+          <ContinentBorder
+            key={idx}
+            coordinates={feature.geometry.coordinates}
+          />
+        ))}
       </group>
     )
   }
