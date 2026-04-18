@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react'
+import { useRef, useState, useEffect } from 'react'
 import { Canvas, useFrame } from '@react-three/fiber'
 import { OrbitControls, Sphere, Html } from '@react-three/drei'
 import * as THREE from 'three'
@@ -167,6 +167,23 @@ const Equator = () => {
 
 const Earth = () => {
   const meshRef = useRef()
+  const [texture, setTexture] = useState(null)
+
+  // Load texture
+  useEffect(() => {
+    const loader = new THREE.TextureLoader()
+    // Simple, clean earth texture
+    loader.load(
+      'https://cdn.jsdelivr.net/npm/three-globe@2.31.1/example/img/earth-blue-marble.jpg',
+      (loadedTexture) => {
+        setTexture(loadedTexture)
+      },
+      undefined,
+      (error) => {
+        console.error('Failed to load texture:', error)
+      }
+    )
+  }, [])
 
   // Slow auto-rotation
   useFrame(() => {
@@ -177,9 +194,11 @@ const Earth = () => {
 
   return (
     <Sphere ref={meshRef} args={[2, 64, 64]}>
-      <meshBasicMaterial
-        color="#a8d5a8"
-      />
+      {texture ? (
+        <meshBasicMaterial map={texture} />
+      ) : (
+        <meshBasicMaterial color="#2d5a3d" />
+      )}
     </Sphere>
   )
 }
