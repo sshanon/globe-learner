@@ -178,7 +178,7 @@ const Earth = () => {
   return (
     <Sphere ref={meshRef} args={[2, 64, 64]}>
       <meshBasicMaterial
-        color="#1a4d7a"
+        color="#a8d5a8"
       />
     </Sphere>
   )

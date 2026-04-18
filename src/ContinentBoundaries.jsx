@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import * as THREE from 'three'
 
 // Convert lat/lon to 3D coordinates on sphere
-const latLonToVector3 = (lat, lon, radius = 2.01) => {
+const latLonToVector3 = (lat, lon, radius = 2.005) => {
   const phi = (90 - lat) * (Math.PI / 180)
   const theta = (lon + 180) * (Math.PI / 180)
 
@@ -152,14 +152,7 @@ export const ContinentBoundaries = () => {
 
   return (
     <group>
-      {/* Filled land masses */}
-      {continentData.features.map((feature, idx) => (
-        <LandMass
-          key={`land-${idx}`}
-          coordinates={feature.geometry.coordinates}
-        />
-      ))}
-      {/* Orange outlines */}
+      {/* Just orange outlines - base sphere is already green */}
       {continentData.features.map((feature, idx) => (
         <ContinentOutline
           key={`outline-${idx}`}
