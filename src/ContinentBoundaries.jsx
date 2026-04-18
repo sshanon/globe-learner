@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import * as THREE from 'three'
 
 // Convert lat/lon to 3D coordinates on sphere
-const latLonToVector3 = (lat, lon, radius = 2.02) => {
+const latLonToVector3 = (lat, lon, radius = 2.01) => {
   const phi = (90 - lat) * (Math.PI / 180)
   const theta = (lon + 180) * (Math.PI / 180)
 
@@ -11,6 +11,68 @@ const latLonToVector3 = (lat, lon, radius = 2.02) => {
   const y = radius * Math.cos(phi)
 
   return [x, y, z]
+}
+
+const LandMass = ({ coordinates }) => {
+  // Create filled triangles for land masses
+  const vertices = []
+  const indices = []
+  let vertexIndex = 0
+
+  const processCoordinates = (coords) => {
+    coords.forEach(ring => {
+      if (Array.isArray(ring[0]) && Array.isArray(ring[0][0])) {
+        processCoordinates(ring)
+      } else if (Array.isArray(ring[0]) && typeof ring[0][0] === 'number') {
+        const points = []
+
+        for (let i = 0; i < ring.length; i++) {
+          const [lon, lat] = ring[i]
+          const prevLon = i > 0 ? ring[i - 1][0] : null
+
+          // Skip if crossing date line
+          if (prevLon !== null && Math.abs(lon - prevLon) > 180) {
+            continue
+          }
+
+          const [x, y, z] = latLonToVector3(lat, lon)
+          vertices.push(x, y, z)
+          points.push(vertexIndex++)
+        }
+
+        // Create triangle fan from points
+        if (points.length >= 3) {
+          for (let i = 1; i < points.length - 1; i++) {
+            indices.push(points[0], points[i], points[i + 1])
+          }
+        }
+      }
+    })
+  }
+
+  processCoordinates(coordinates)
+
+  if (vertices.length === 0) return null
+
+  return (
+    <mesh>
+      <bufferGeometry>
+        <bufferAttribute
+          attach="attributes-position"
+          count={vertices.length / 3}
+          array={new Float32Array(vertices)}
+          itemSize={3}
+        />
+        <bufferAttribute
+          attach="index"
+          array={new Uint32Array(indices)}
+          count={indices.length}
+          itemSize={1}
+        />
+      </bufferGeometry>
+      <meshBasicMaterial color="#2d5a3d" side={THREE.DoubleSide} />
+    </mesh>
+  )
 }
 
 const ContinentOutline = ({ coordinates }) => {
@@ -90,9 +152,17 @@ export const ContinentBoundaries = () => {
 
   return (
     <group>
+      {/* Filled land masses */}
+      {continentData.features.map((feature, idx) => (
+        <LandMass
+          key={`land-${idx}`}
+          coordinates={feature.geometry.coordinates}
+        />
+      ))}
+      {/* Orange outlines */}
       {continentData.features.map((feature, idx) => (
         <ContinentOutline
-          key={idx}
+          key={`outline-${idx}`}
           coordinates={feature.geometry.coordinates}
         />
       ))}
