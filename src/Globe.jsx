@@ -5,6 +5,7 @@ import * as THREE from 'three'
 import { countries, CONTINENTS, REGIONS } from './countryData'
 import useStore from './store'
 import BorderRenderer from './BorderRenderer'
+import ContinentBoundaries from './ContinentBoundaries'
 
 // Convert lat/lon to 3D coordinates on sphere
 const latLonToVector3 = (lat, lon, radius = 2) => {
@@ -227,6 +228,9 @@ const GlobeScene = () => {
       {currentLevel === 2 && <BorderRenderer type="continents" brightness="high" />}
       {currentLevel === 3 && <BorderRenderer type="countries" brightness="high" />}
       {currentLevel === 4 && <BorderRenderer type="countries" brightness="high" />}
+
+      {/* Always show continent boundaries (thick orange outlines) */}
+      <ContinentBoundaries />
 
       {/* Level 1: Show continents */}
       {currentLevel === 1 && Object.values(CONTINENTS).map(continent => (
