@@ -4,13 +4,13 @@ import { getPointsForLevel } from './countryData'
 const UI = () => {
   const { currentLevel, currentCountry, score, feedback, setLevel, resetScore, nextQuestion } = useStore()
 
-  const VERSION = 'v0.8'
+  const VERSION = 'v0.9'
 
   const levelNames = {
-    1: 'Continents',
-    2: 'Continent Classification',
-    3: 'Region Placement',
-    4: 'Exact Location'
+    1: 'יבשות',
+    2: 'זיהוי יבשת',
+    3: 'זיהוי אזור',
+    4: 'מיקום מדויק'
   }
 
   const levelPoints = {
@@ -55,7 +55,7 @@ const UI = () => {
         borderBottom: '2px solid rgba(255,255,255,0.1)'
       }}>
         <div style={{ fontSize: '12px', opacity: 0.6, marginBottom: '6px' }}>
-          {levelNames[currentLevel]} • {levelPoints[currentLevel]} points
+          {levelNames[currentLevel]} • {levelPoints[currentLevel]} נקודות
         </div>
         {currentCountry && (
           <div style={{
@@ -64,10 +64,10 @@ const UI = () => {
             textShadow: '2px 2px 4px rgba(0,0,0,1)',
             color: '#ffffff'
           }}>
-            {currentLevel === 1 ? `Where is ${currentCountry}?` :
-             currentLevel === 2 ? `Which continent is ${currentCountry} in?` :
-             currentLevel === 3 ? `Which region is ${currentCountry} in?` :
-             `Where is ${currentCountry}?`}
+            {currentLevel === 1 ? `איפה ${currentCountry}?` :
+             currentLevel === 2 ? `באיזו יבשת נמצאת ${currentCountry}?` :
+             currentLevel === 3 ? `באיזה אזור נמצאת ${currentCountry}?` :
+             `איפה ${currentCountry}?`}
           </div>
         )}
       </div>
@@ -87,10 +87,10 @@ const UI = () => {
           textAlign: 'center',
           animation: 'fadeIn 0.3s ease-in'
         }}>
-          {feedback.correct ? '✓ Correct!' : '✗ Wrong'}
+          {feedback.correct ? '✓ נכון!' : '✗ לא נכון'}
           {feedback.correctAnswer && (
             <div style={{ fontSize: '16px', marginTop: '10px', opacity: 0.9 }}>
-              Correct answer: {feedback.correctAnswer}
+              התשובה הנכונה: {feedback.correctAnswer}
             </div>
           )}
           {!feedback.correct && (
@@ -106,7 +106,7 @@ const UI = () => {
               }}
               onClick={nextQuestion}
             >
-              Try Next Question
+              לשאלה הבאה
             </div>
           )}
         </div>
@@ -125,7 +125,7 @@ const UI = () => {
           textAlign: 'center',
           marginBottom: '15px'
         }}>
-          Score: {score}
+          ניקוד: {score}
         </div>
 
         {/* Level selector */}
@@ -174,7 +174,7 @@ const UI = () => {
               cursor: 'pointer'
             }}
           >
-            Reset Score
+            אפס ניקוד
           </button>
         </div>
       </div>

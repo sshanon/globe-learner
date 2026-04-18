@@ -66,7 +66,7 @@ const CountryBorder = ({ coordinates }) => {
               itemSize={3}
             />
           </bufferGeometry>
-          <lineBasicMaterial color="#ffffff" opacity={0.4} transparent />
+          <lineBasicMaterial color="#ffffff" opacity={0.25} transparent />
         </line>
       ))}
     </group>
@@ -121,7 +121,7 @@ const ContinentBorder = ({ coordinates }) => {
               itemSize={3}
             />
           </bufferGeometry>
-          <lineBasicMaterial color="#00ddff" opacity={0.8} transparent linewidth={3} />
+          <lineBasicMaterial color="#00ffff" opacity={0.9} transparent linewidth={4} />
         </line>
       ))}
     </group>
