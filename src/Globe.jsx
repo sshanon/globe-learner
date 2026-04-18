@@ -18,9 +18,28 @@ const latLonToVector3 = (lat, lon, radius = 2) => {
   return new THREE.Vector3(x, y, z)
 }
 
-const CountryMarker = ({ name, lat, lon, onCountryClick, isTarget, showFeedback }) => {
+const CountryMarker = ({ name, lat, lon, onCountryClick, isTarget, showFeedback, visible = true }) => {
   const position = latLonToVector3(lat, lon)
   const [hovered, setHovered] = useState(false)
+
+  // For Level 4, make markers invisible but still clickable
+  if (!visible) {
+    return (
+      <mesh
+        position={position}
+        onClick={() => onCountryClick(name)}
+        onPointerOver={() => setHovered(true)}
+        onPointerOut={() => setHovered(false)}
+      >
+        <sphereGeometry args={[0.15, 12, 12]} />
+        <meshBasicMaterial
+          color="#ffffff"
+          opacity={0}
+          transparent
+        />
+      </mesh>
+    )
+  }
 
   return (
     <mesh
@@ -145,20 +164,20 @@ const Equator = () => {
   )
 }
 
-const OceanLabel = ({ name, lat, lon }) => {
+const ContinentLabel = ({ name, lat, lon }) => {
   const position = latLonToVector3(lat, lon, 2.05)
 
   return (
-    <Html position={position} distanceFactor={20}>
+    <Html position={position} distanceFactor={25}>
       <div style={{
-        color: '#4da6ff',
-        fontSize: '10px',
-        fontWeight: 'normal',
-        fontStyle: 'italic',
-        opacity: 0.4,
+        color: '#00ddff',
+        fontSize: '11px',
+        fontWeight: 'bold',
+        opacity: 0.5,
         pointerEvents: 'none',
-        textShadow: '1px 1px 2px rgba(0,0,0,0.8)',
-        whiteSpace: 'nowrap'
+        textShadow: '2px 2px 4px rgba(0,0,0,0.9)',
+        whiteSpace: 'nowrap',
+        letterSpacing: '1px'
       }}>
         {name}
       </div>
@@ -224,6 +243,14 @@ const GlobeScene = () => {
       {/* Always show equator */}
       <Equator />
 
+      {/* Continent labels for orientation */}
+      <ContinentLabel name="AFRICA" lat={5} lon={20} />
+      <ContinentLabel name="ASIA" lat={45} lon={90} />
+      <ContinentLabel name="EUROPE" lat={55} lon={20} />
+      <ContinentLabel name="N. AMERICA" lat={50} lon={-100} />
+      <ContinentLabel name="S. AMERICA" lat={-15} lon={-60} />
+      <ContinentLabel name="OCEANIA" lat={-25} lon={135} />
+
       {/* Show borders based on level */}
       {(currentLevel === 1 || currentLevel === 2) && <BorderRenderer type="continents" />}
       {currentLevel === 3 && <BorderRenderer type="countries" />}
@@ -266,7 +293,7 @@ const GlobeScene = () => {
           />
         ))}
 
-      {/* Level 4: Show country markers */}
+      {/* Level 4: Invisible clickable areas */}
       {currentLevel === 4 && Object.entries(countries)
         .filter(([_, data]) => data.level === 4)
         .map(([name, data]) => (
@@ -278,6 +305,7 @@ const GlobeScene = () => {
             onCountryClick={handleCountryClick}
             isTarget={name === currentCountry}
             showFeedback={feedback !== null}
+            visible={false}
           />
         ))}
 

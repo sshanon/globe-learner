@@ -121,35 +121,56 @@ const ContinentBorder = ({ coordinates }) => {
               itemSize={3}
             />
           </bufferGeometry>
-          <lineBasicMaterial color="#00ffff" opacity={0.5} transparent />
+          <lineBasicMaterial color="#00ddff" opacity={0.8} transparent linewidth={3} />
         </line>
       ))}
     </group>
   )
 }
 
-export const BorderRenderer = ({ type = 'countries' }) => {
+export const BorderRenderer = ({ type = 'countries', showContinentBorders = false }) => {
   const [geoData, setGeoData] = useState(null)
 
   useEffect(() => {
-    // Use simplified GeoJSON data
-    fetch('https://raw.githubusercontent.com/datasets/geo-countries/master/data/countries.geojson')
+    // Try Natural Earth for better accuracy
+    fetch('https://raw.githubusercontent.com/nvkelso/natural-earth-vector/master/geojson/ne_110m_admin_0_countries.geojson')
       .then(res => res.json())
       .then(geojson => setGeoData(geojson))
-      .catch(err => console.error('Failed to load borders:', err))
+      .catch(() => {
+        // Fallback to previous source
+        fetch('https://raw.githubusercontent.com/datasets/geo-countries/master/data/countries.geojson')
+          .then(res => res.json())
+          .then(geojson => setGeoData(geojson))
+          .catch(err => console.error('Failed to load borders:', err))
+      })
   }, [])
 
   if (!geoData) return null
 
+  // Group countries by continent for coloring
+  const continentColors = {
+    'Africa': '#ff6b6b33',
+    'Asia': '#4ecdc433',
+    'Europe': '#45b7d133',
+    'North America': '#ffd93d33',
+    'South America': '#95e1d333',
+    'Oceania': '#f38181333'
+  }
+
   if (type === 'continents') {
     return (
       <group>
-        {geoData.features.map((feature, idx) => (
-          <ContinentBorder
-            key={idx}
-            coordinates={feature.geometry.coordinates}
-          />
-        ))}
+        {geoData.features.map((feature, idx) => {
+          const continent = feature.properties?.CONTINENT || feature.properties?.continent
+          const color = continentColors[continent] || '#ffffff33'
+
+          return (
+            <ContinentBorder
+              key={idx}
+              coordinates={feature.geometry.coordinates}
+            />
+          )
+        })}
       </group>
     )
   }
