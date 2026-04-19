@@ -152,7 +152,14 @@ export const ContinentBoundaries = () => {
 
   return (
     <group>
-      {/* Just orange outlines - base sphere is already green */}
+      {/* Green filled land masses */}
+      {continentData.features.map((feature, idx) => (
+        <LandMass
+          key={`land-${idx}`}
+          coordinates={feature.geometry.coordinates}
+        />
+      ))}
+      {/* Orange outlines */}
       {continentData.features.map((feature, idx) => (
         <ContinentOutline
           key={`outline-${idx}`}

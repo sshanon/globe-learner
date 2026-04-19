@@ -4,7 +4,7 @@ import { getPointsForLevel } from './countryData'
 const UI = () => {
   const { currentLevel, currentCountry, score, feedback, setLevel, resetScore, nextQuestion } = useStore()
 
-  const VERSION = 'v2.1'
+  const VERSION = 'v2.2'
 
   const levelNames = {
     1: 'יבשות',

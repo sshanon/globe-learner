@@ -165,31 +165,9 @@ const Equator = () => {
 }
 
 const Earth = () => {
-  const [texture, setTexture] = useState(null)
-
-  // Load texture
-  useEffect(() => {
-    const loader = new THREE.TextureLoader()
-    // Simple, clean earth texture
-    loader.load(
-      'https://cdn.jsdelivr.net/npm/three-globe@2.31.1/example/img/earth-blue-marble.jpg',
-      (loadedTexture) => {
-        setTexture(loadedTexture)
-      },
-      undefined,
-      (error) => {
-        console.error('Failed to load texture:', error)
-      }
-    )
-  }, [])
-
   return (
     <Sphere args={[2, 64, 64]}>
-      {texture ? (
-        <meshBasicMaterial map={texture} />
-      ) : (
-        <meshBasicMaterial color="#2d5a3d" />
-      )}
+      <meshBasicMaterial color="#1a4d7a" />
     </Sphere>
   )
 }
