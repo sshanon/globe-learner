@@ -68,9 +68,17 @@ export const countries = {
 }
 
 export const getCountriesByLevel = (level) => {
-  return Object.entries(countries)
-    .filter(([_, data]) => data.level === level)
-    .map(([name]) => name)
+  if (level === 4) {
+    // Level 4: Only exact placement countries
+    return Object.entries(countries)
+      .filter(([_, data]) => data.level === 4)
+      .map(([name]) => name)
+  } else {
+    // Level 2 and 3: Include all countries at this level or higher
+    return Object.entries(countries)
+      .filter(([_, data]) => data.level >= level)
+      .map(([name]) => name)
+  }
 }
 
 export const getRandomCountry = (level) => {
