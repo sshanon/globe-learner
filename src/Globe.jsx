@@ -212,33 +212,24 @@ const Earth = () => {
 
 const GlobeScene = () => {
   const { currentLevel, currentCountry, feedback, checkAnswer, checkContinent, checkRegion } = useStore()
-  const [isDragging, setIsDragging] = useState(false)
   const controlsRef = useRef()
+  const lastClickRef = useRef({ time: 0, target: null })
 
-  // Track dragging state
-  useEffect(() => {
-    if (!controlsRef.current) return
+  // Double-click detection helper
+  const isDoubleClick = (target) => {
+    const now = Date.now()
+    const timeSinceLastClick = now - lastClickRef.current.time
+    const sameTarget = lastClickRef.current.target === target
 
-    const handleDragStart = () => setIsDragging(true)
-    const handleDragEnd = () => {
-      // Delay reset to prevent immediate clicks after drag
-      setTimeout(() => setIsDragging(false), 100)
-    }
+    lastClickRef.current = { time: now, target }
 
-    controlsRef.current.addEventListener('start', handleDragStart)
-    controlsRef.current.addEventListener('end', handleDragEnd)
-
-    return () => {
-      if (controlsRef.current) {
-        controlsRef.current.removeEventListener('start', handleDragStart)
-        controlsRef.current.removeEventListener('end', handleDragEnd)
-      }
-    }
-  }, [])
+    // If clicked the same target within 400ms, it's a double-click
+    return sameTarget && timeSinceLastClick < 400
+  }
 
   const handleCountryClick = (countryName) => {
-    if (isDragging) return // Ignore clicks during drag
     if (feedback?.correct) return // Prevent clicks during feedback
+    if (!isDoubleClick(countryName)) return // Require double-click
 
     if (currentLevel === 3) {
       // Level 3: Check if clicked country's region matches
@@ -252,16 +243,16 @@ const GlobeScene = () => {
   }
 
   const handleContinentClick = (continent) => {
-    if (isDragging) return // Ignore clicks during drag
     if (feedback?.correct) return
+    if (!isDoubleClick(continent)) return // Require double-click
     if (currentLevel === 1 || currentLevel === 2) {
       checkContinent(continent)
     }
   }
 
   const handleRegionClick = (region) => {
-    if (isDragging) return // Ignore clicks during drag
     if (feedback?.correct) return
+    if (!isDoubleClick(region)) return // Require double-click
     if (currentLevel === 3) {
       checkRegion(region)
     }

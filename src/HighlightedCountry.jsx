@@ -41,10 +41,10 @@ const isPointInBounds = (lat, lon, coordinates) => {
 const CountryBorderHighlight = ({ coordinates, color }) => {
   const lineSegments = []
 
-  const processCoordinates = (coords) => {
+  const processCoordinates = (coords, radius = 2.015) => {
     coords.forEach(ring => {
       if (Array.isArray(ring[0]) && Array.isArray(ring[0][0])) {
-        processCoordinates(ring)
+        processCoordinates(ring, radius)
       } else if (Array.isArray(ring[0]) && typeof ring[0][0] === 'number') {
         const points = []
 
@@ -55,38 +55,51 @@ const CountryBorderHighlight = ({ coordinates, color }) => {
           // Detect date line crossing
           if (prevLon !== null && Math.abs(lon - prevLon) > 180) {
             if (points.length > 1) {
-              lineSegments.push([...points])
+              lineSegments.push({ points: [...points], radius })
             }
             points.length = 0
           }
 
-          points.push(new THREE.Vector3(...latLonToVector3(lat, lon)))
+          const phi = (90 - lat) * (Math.PI / 180)
+          const theta = (lon + 180) * (Math.PI / 180)
+          const x = -(radius * Math.sin(phi) * Math.cos(theta))
+          const z = radius * Math.sin(phi) * Math.sin(theta)
+          const y = radius * Math.cos(phi)
+          points.push(new THREE.Vector3(x, y, z))
         }
 
         if (points.length > 1) {
-          lineSegments.push(points)
+          lineSegments.push({ points, radius })
         }
       }
     })
   }
 
-  processCoordinates(coordinates)
+  // Render at multiple radii to create thick borders
+  processCoordinates(coordinates, 2.020)
+  processCoordinates(coordinates, 2.018)
+  processCoordinates(coordinates, 2.016)
 
   if (lineSegments.length === 0) return null
 
   return (
     <group>
-      {lineSegments.map((points, idx) => (
+      {lineSegments.map((segment, idx) => (
         <line key={idx}>
           <bufferGeometry>
             <bufferAttribute
               attach="attributes-position"
-              count={points.length}
-              array={new Float32Array(points.flatMap(p => [p.x, p.y, p.z]))}
+              count={segment.points.length}
+              array={new Float32Array(segment.points.flatMap(p => [p.x, p.y, p.z]))}
               itemSize={3}
             />
           </bufferGeometry>
-          <lineBasicMaterial color={color} opacity={1.0} transparent={false} />
+          <lineBasicMaterial
+            color={color}
+            opacity={1.0}
+            transparent={false}
+            linewidth={3}
+          />
         </line>
       ))}
     </group>
