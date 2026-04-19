@@ -196,8 +196,32 @@ const Earth = () => {
 
 const GlobeScene = () => {
   const { currentLevel, currentCountry, feedback, checkAnswer, checkContinent, checkRegion } = useStore()
+  const [isDragging, setIsDragging] = useState(false)
+  const controlsRef = useRef()
+
+  // Track dragging state
+  useEffect(() => {
+    if (!controlsRef.current) return
+
+    const handleDragStart = () => setIsDragging(true)
+    const handleDragEnd = () => {
+      // Delay reset to prevent immediate clicks after drag
+      setTimeout(() => setIsDragging(false), 100)
+    }
+
+    controlsRef.current.addEventListener('start', handleDragStart)
+    controlsRef.current.addEventListener('end', handleDragEnd)
+
+    return () => {
+      if (controlsRef.current) {
+        controlsRef.current.removeEventListener('start', handleDragStart)
+        controlsRef.current.removeEventListener('end', handleDragEnd)
+      }
+    }
+  }, [])
 
   const handleCountryClick = (countryName) => {
+    if (isDragging) return // Ignore clicks during drag
     if (feedback?.correct) return // Prevent clicks during feedback
 
     if (currentLevel === 3) {
@@ -212,6 +236,7 @@ const GlobeScene = () => {
   }
 
   const handleContinentClick = (continent) => {
+    if (isDragging) return // Ignore clicks during drag
     if (feedback?.correct) return
     if (currentLevel === 1 || currentLevel === 2) {
       checkContinent(continent)
@@ -219,6 +244,7 @@ const GlobeScene = () => {
   }
 
   const handleRegionClick = (region) => {
+    if (isDragging) return // Ignore clicks during drag
     if (feedback?.correct) return
     if (currentLevel === 3) {
       checkRegion(region)
@@ -245,12 +271,10 @@ const GlobeScene = () => {
 
       {/* Show highlighted country location when feedback is shown */}
       {feedback && currentCountry && countries[currentCountry] && (
-        <mesh position={latLonToVector3(countries[currentCountry].lat, countries[currentCountry].lon)}>
-          <sphereGeometry args={[0.08, 16, 16]} />
+        <mesh position={latLonToVector3(countries[currentCountry].lat, countries[currentCountry].lon, 2.05)}>
+          <sphereGeometry args={[0.12, 16, 16]} />
           <meshBasicMaterial
             color={feedback.correct ? '#00ff00' : '#ff0000'}
-            opacity={0.9}
-            transparent
           />
         </mesh>
       )}
@@ -310,6 +334,7 @@ const GlobeScene = () => {
         ))}
 
       <OrbitControls
+        ref={controlsRef}
         enableZoom={false}
         enablePan={false}
         rotateSpeed={0.5}
