@@ -13,6 +13,29 @@ const latLonToVector3 = (lat, lon, radius = 2.015) => {
   return [x, y, z]
 }
 
+// Calculate center of polygon
+const getPolygonCenter = (coordinates) => {
+  let totalLat = 0, totalLon = 0, count = 0
+
+  const extractPoints = (coords) => {
+    coords.forEach(ring => {
+      if (Array.isArray(ring[0]) && Array.isArray(ring[0][0])) {
+        extractPoints(ring)
+      } else if (Array.isArray(ring[0]) && typeof ring[0][0] === 'number') {
+        ring.forEach(([lon, lat]) => {
+          totalLat += lat
+          totalLon += lon
+          count++
+        })
+      }
+    })
+  }
+
+  extractPoints(coordinates)
+
+  return count > 0 ? { lat: totalLat / count, lon: totalLon / count } : null
+}
+
 // Check if a point is inside a polygon bounds
 const isPointInBounds = (lat, lon, coordinates) => {
   let minLat = Infinity, maxLat = -Infinity
@@ -36,6 +59,11 @@ const isPointInBounds = (lat, lon, coordinates) => {
   extractBounds(coordinates)
 
   return lat >= minLat && lat <= maxLat && lon >= minLon && lon <= maxLon
+}
+
+// Calculate distance between two points
+const getDistance = (lat1, lon1, lat2, lon2) => {
+  return Math.sqrt(Math.pow(lat1 - lat2, 2) + Math.pow(lon1 - lon2, 2))
 }
 
 const CountryBorderHighlight = ({ coordinates, color }) => {
@@ -143,13 +171,30 @@ export const HighlightedCountry = ({ countryLat, countryLon, isCorrect }) => {
     loadGeoJSON().then(geojson => {
       if (!geojson) return
 
-      // Find feature that contains the country coordinates
-      const matchingFeature = geojson.features.find(feature =>
+      // Find all features that contain the country coordinates in their bounding box
+      const candidates = geojson.features.filter(feature =>
         isPointInBounds(countryLat, countryLon, feature.geometry.coordinates)
       )
 
-      if (matchingFeature) {
-        setCountryGeometry(matchingFeature.geometry.coordinates)
+      if (candidates.length === 0) return
+
+      // If multiple candidates, pick the one whose center is closest to the target
+      let bestMatch = candidates[0]
+      let bestDistance = Infinity
+
+      candidates.forEach(feature => {
+        const center = getPolygonCenter(feature.geometry.coordinates)
+        if (center) {
+          const distance = getDistance(countryLat, countryLon, center.lat, center.lon)
+          if (distance < bestDistance) {
+            bestDistance = distance
+            bestMatch = feature
+          }
+        }
+      })
+
+      if (bestMatch) {
+        setCountryGeometry(bestMatch.geometry.coordinates)
       }
     })
   }, [countryLat, countryLon])
