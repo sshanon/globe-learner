@@ -202,8 +202,9 @@ const Earth = () => {
   return (
     <Sphere args={[2, 64, 64]}>
       <meshBasicMaterial
-        map={texture || undefined}
-        color={texture ? undefined : "#4a7c59"}
+        key={texture ? 'textured' : 'fallback'}
+        map={texture}
+        color={texture ? null : "#4a7c59"}
       />
     </Sphere>
   )
