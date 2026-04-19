@@ -32,10 +32,10 @@ const CountryMarker = ({ name, lat, lon, onCountryClick, isTarget, showFeedback,
         onPointerOver={() => setHovered(true)}
         onPointerOut={() => setHovered(false)}
       >
-        <sphereGeometry args={[0.15, 12, 12]} />
+        <sphereGeometry args={[0.2, 16, 16]} />
         <meshBasicMaterial
           color="#ffffff"
-          opacity={0}
+          opacity={0.001}
           transparent
         />
       </mesh>
@@ -87,12 +87,11 @@ const ContinentMarker = ({ continent, onContinentClick }) => {
       onPointerOver={() => setHovered(true)}
       onPointerOut={() => setHovered(false)}
     >
-      <sphereGeometry args={[0.8, 16, 16]} />
+      <sphereGeometry args={[1.0, 16, 16]} />
       <meshBasicMaterial
         color="#00aaff"
         transparent
-        opacity={0}
-        visible={false}
+        opacity={0.001}
       />
     </mesh>
   )
@@ -226,36 +225,23 @@ const GlobeScene = () => {
     }
   }
 
-  // Create a rotating ref for everything
-  const globeGroupRef = useRef()
-
-  // Slow auto-rotation for the whole group
-  useFrame(() => {
-    if (globeGroupRef.current) {
-      globeGroupRef.current.rotation.y += 0.001
-    }
-  })
-
   return (
     <>
       <ambientLight intensity={1.2} />
 
-      {/* Group everything together so they rotate as one */}
-      <group ref={globeGroupRef}>
-        <Earth />
+      <Earth />
 
-        {/* Always show equator */}
-        <Equator />
+      {/* Always show equator */}
+      <Equator />
 
-        {/* Show borders based on level */}
-        {currentLevel === 1 && <BorderRenderer type="continents" brightness="high" />}
-        {currentLevel === 2 && <BorderRenderer type="continents" brightness="high" />}
-        {currentLevel === 3 && <BorderRenderer type="countries" brightness="high" />}
-        {currentLevel === 4 && <BorderRenderer type="countries" brightness="high" />}
+      {/* Show borders based on level */}
+      {currentLevel === 1 && <BorderRenderer type="continents" brightness="high" />}
+      {currentLevel === 2 && <BorderRenderer type="continents" brightness="high" />}
+      {currentLevel === 3 && <BorderRenderer type="countries" brightness="high" />}
+      {currentLevel === 4 && <BorderRenderer type="countries" brightness="high" />}
 
-        {/* Always show continent boundaries (thick orange outlines) */}
-        <ContinentBoundaries />
-      </group>
+      {/* Always show continent boundaries (thick orange outlines) */}
+      <ContinentBoundaries />
 
       {/* Level 1: Show continents */}
       {currentLevel === 1 && Object.values(CONTINENTS).map(continent => (
