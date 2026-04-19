@@ -167,7 +167,7 @@ const Equator = () => {
 const Earth = () => {
   return (
     <Sphere args={[2, 64, 64]}>
-      <meshBasicMaterial color="#1a4d7a" />
+      <meshBasicMaterial color="#4a7c59" />
     </Sphere>
   )
 }
