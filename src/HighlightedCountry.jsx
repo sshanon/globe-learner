@@ -93,24 +93,52 @@ const CountryBorderHighlight = ({ coordinates, color }) => {
   )
 }
 
+// Cache the GeoJSON data globally to avoid repeated fetches
+let cachedGeoJSON = null
+let geoJSONPromise = null
+
+const loadGeoJSON = () => {
+  if (cachedGeoJSON) {
+    return Promise.resolve(cachedGeoJSON)
+  }
+
+  if (geoJSONPromise) {
+    return geoJSONPromise
+  }
+
+  geoJSONPromise = fetch('https://raw.githubusercontent.com/nvkelso/natural-earth-vector/master/geojson/ne_50m_admin_0_countries.geojson')
+    .then(res => res.json())
+    .then(geojson => {
+      cachedGeoJSON = geojson
+      geoJSONPromise = null
+      return geojson
+    })
+    .catch(err => {
+      console.error('Failed to load country geometry:', err)
+      geoJSONPromise = null
+      return null
+    })
+
+  return geoJSONPromise
+}
+
 export const HighlightedCountry = ({ countryLat, countryLon, isCorrect }) => {
   const [countryGeometry, setCountryGeometry] = useState(null)
 
   useEffect(() => {
     // Load GeoJSON and find matching country
-    fetch('https://raw.githubusercontent.com/nvkelso/natural-earth-vector/master/geojson/ne_50m_admin_0_countries.geojson')
-      .then(res => res.json())
-      .then(geojson => {
-        // Find feature that contains the country coordinates
-        const matchingFeature = geojson.features.find(feature =>
-          isPointInBounds(countryLat, countryLon, feature.geometry.coordinates)
-        )
+    loadGeoJSON().then(geojson => {
+      if (!geojson) return
 
-        if (matchingFeature) {
-          setCountryGeometry(matchingFeature.geometry.coordinates)
-        }
-      })
-      .catch(err => console.error('Failed to load country geometry:', err))
+      // Find feature that contains the country coordinates
+      const matchingFeature = geojson.features.find(feature =>
+        isPointInBounds(countryLat, countryLon, feature.geometry.coordinates)
+      )
+
+      if (matchingFeature) {
+        setCountryGeometry(matchingFeature.geometry.coordinates)
+      }
+    })
   }, [countryLat, countryLon])
 
   if (!countryGeometry) return null
