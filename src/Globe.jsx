@@ -6,6 +6,7 @@ import { countries, CONTINENTS, REGIONS } from './countryData'
 import useStore from './store'
 import BorderRenderer from './BorderRenderer'
 import ContinentBoundaries from './ContinentBoundaries'
+import HighlightedCountry from './HighlightedCountry'
 
 // Convert lat/lon to 3D coordinates on sphere
 const latLonToVector3 = (lat, lon, radius = 2) => {
@@ -288,14 +289,13 @@ const GlobeScene = () => {
       {/* Always show continent boundaries (thick orange outlines) */}
       <ContinentBoundaries />
 
-      {/* Show highlighted country location when feedback is shown */}
+      {/* Show highlighted country borders when feedback is shown */}
       {feedback && currentCountry && countries[currentCountry] && (
-        <mesh position={latLonToVector3(countries[currentCountry].lat, countries[currentCountry].lon, 2.05)}>
-          <sphereGeometry args={[0.12, 16, 16]} />
-          <meshBasicMaterial
-            color={feedback.correct ? '#00ff00' : '#ff0000'}
-          />
-        </mesh>
+        <HighlightedCountry
+          countryLat={countries[currentCountry].lat}
+          countryLon={countries[currentCountry].lon}
+          isCorrect={feedback.correct}
+        />
       )}
 
       {/* Level 1: Show continents */}
