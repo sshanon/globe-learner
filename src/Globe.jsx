@@ -243,6 +243,18 @@ const GlobeScene = () => {
       {/* Always show continent boundaries (thick orange outlines) */}
       <ContinentBoundaries />
 
+      {/* Show highlighted country location when feedback is shown */}
+      {feedback && currentCountry && countries[currentCountry] && (
+        <mesh position={latLonToVector3(countries[currentCountry].lat, countries[currentCountry].lon)}>
+          <sphereGeometry args={[0.08, 16, 16]} />
+          <meshBasicMaterial
+            color={feedback.correct ? '#00ff00' : '#ff0000'}
+            opacity={0.9}
+            transparent
+          />
+        </mesh>
+      )}
+
       {/* Level 1: Show continents */}
       {currentLevel === 1 && Object.values(CONTINENTS).map(continent => (
         <ContinentMarker
