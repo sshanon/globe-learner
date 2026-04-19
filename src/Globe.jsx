@@ -165,9 +165,50 @@ const Equator = () => {
 }
 
 const Earth = () => {
+  const [texture, setTexture] = useState(null)
+  const [textureError, setTextureError] = useState(false)
+
+  useEffect(() => {
+    const loader = new THREE.TextureLoader()
+
+    // Try primary texture source
+    loader.load(
+      'https://cdn.jsdelivr.net/npm/three-globe@2.31.1/example/img/earth-blue-marble.jpg',
+      (loadedTexture) => {
+        console.log('Texture loaded successfully')
+        setTexture(loadedTexture)
+        setTextureError(false)
+      },
+      undefined,
+      (error) => {
+        console.error('Failed to load primary texture:', error)
+        setTextureError(true)
+
+        // Try alternative texture source
+        loader.load(
+          'https://unpkg.com/three-globe@2.31.1/example/img/earth-blue-marble.jpg',
+          (loadedTexture) => {
+            console.log('Fallback texture loaded successfully')
+            setTexture(loadedTexture)
+            setTextureError(false)
+          },
+          undefined,
+          (err) => {
+            console.error('Failed to load fallback texture:', err)
+            setTextureError(true)
+          }
+        )
+      }
+    )
+  }, [])
+
   return (
     <Sphere args={[2, 64, 64]}>
-      <meshBasicMaterial color="#4a7c59" />
+      {texture && !textureError ? (
+        <meshBasicMaterial map={texture} />
+      ) : (
+        <meshBasicMaterial color="#4a7c59" />
+      )}
     </Sphere>
   )
 }
