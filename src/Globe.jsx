@@ -167,7 +167,6 @@ const Equator = () => {
 
 const Earth = () => {
   const [texture, setTexture] = useState(null)
-  const [textureError, setTextureError] = useState(false)
 
   useEffect(() => {
     const loader = new THREE.TextureLoader()
@@ -178,12 +177,10 @@ const Earth = () => {
       (loadedTexture) => {
         console.log('Texture loaded successfully')
         setTexture(loadedTexture)
-        setTextureError(false)
       },
       undefined,
       (error) => {
         console.error('Failed to load primary texture:', error)
-        setTextureError(true)
 
         // Try alternative texture source
         loader.load(
@@ -191,12 +188,11 @@ const Earth = () => {
           (loadedTexture) => {
             console.log('Fallback texture loaded successfully')
             setTexture(loadedTexture)
-            setTextureError(false)
           },
           undefined,
           (err) => {
             console.error('Failed to load fallback texture:', err)
-            setTextureError(true)
+            // Keep texture as null, will use green fallback
           }
         )
       }
@@ -205,11 +201,10 @@ const Earth = () => {
 
   return (
     <Sphere args={[2, 64, 64]}>
-      {texture && !textureError ? (
-        <meshBasicMaterial map={texture} />
-      ) : (
-        <meshBasicMaterial color="#4a7c59" />
-      )}
+      <meshBasicMaterial
+        map={texture || undefined}
+        color={texture ? undefined : "#4a7c59"}
+      />
     </Sphere>
   )
 }
