@@ -166,7 +166,48 @@ const loadGeoJSON = () => {
   return geoJSONPromise
 }
 
-export const HighlightedCountry = ({ countryLat, countryLon, isCorrect }) => {
+// Map Hebrew country names to potential GeoJSON name matches
+const countryNameMap = {
+  'ישראל': ['Israel'],
+  'לבנון': ['Lebanon'],
+  'סוריה': ['Syria', 'Syrian Arab Republic'],
+  'מצרים': ['Egypt'],
+  'ירדן': ['Jordan'],
+  'ארה"ב': ['United States of America', 'United States'],
+  'קנדה': ['Canada'],
+  'מקסיקו': ['Mexico'],
+  'אוסטרליה': ['Australia'],
+  'ניו זילנד': ['New Zealand'],
+  'יפן': ['Japan'],
+  'סין': ['China', 'People\'s Republic of China'],
+  'מונגוליה': ['Mongolia'],
+  'רוסיה': ['Russia', 'Russian Federation'],
+  'הודו': ['India'],
+  'דרום קוריאה': ['South Korea', 'Korea, Republic of', 'Republic of Korea'],
+  'ברזיל': ['Brazil'],
+  'גרמניה': ['Germany'],
+  'צרפת': ['France'],
+  'איטליה': ['Italy'],
+  'קפריסין': ['Cyprus'],
+  'בריטניה': ['United Kingdom', 'United Kingdom of Great Britain and Northern Ireland'],
+  'אירלנד': ['Ireland'],
+  'ספרד': ['Spain'],
+  'מרוקו': ['Morocco'],
+  'דרום אפריקה': ['South Africa'],
+  'טורקיה': ['Turkey'],
+  'ארגנטינה': ['Argentina'],
+  'צ\'ילה': ['Chile'],
+  'קוסטה ריקה': ['Costa Rica'],
+  'בוליביה': ['Bolivia'],
+  'ונצואלה': ['Venezuela'],
+  'תאילנד': ['Thailand'],
+  'איראן': ['Iran', 'Islamic Republic of Iran'],
+  'ערב הסעודית': ['Saudi Arabia'],
+  'נורווגיה': ['Norway'],
+  'שוודיה': ['Sweden']
+}
+
+export const HighlightedCountry = ({ countryLat, countryLon, isCorrect, countryName }) => {
   const [countryGeometry, setCountryGeometry] = useState(null)
 
   useEffect(() => {
@@ -174,33 +215,51 @@ export const HighlightedCountry = ({ countryLat, countryLon, isCorrect }) => {
     loadGeoJSON().then(geojson => {
       if (!geojson) return
 
-      // Find all features that contain the country coordinates in their bounding box
-      const candidates = geojson.features.filter(feature =>
-        isPointInBounds(countryLat, countryLon, feature.geometry.coordinates)
-      )
+      let matchedFeature = null
 
-      if (candidates.length === 0) return
+      // First, try to match by country name if provided
+      if (countryName && countryNameMap[countryName]) {
+        const possibleNames = countryNameMap[countryName]
+        matchedFeature = geojson.features.find(feature => {
+          const featureName = feature.properties.name || feature.properties.NAME || feature.properties.ADMIN
+          return possibleNames.some(name =>
+            featureName && featureName.toLowerCase().includes(name.toLowerCase())
+          )
+        })
+      }
 
-      // If multiple candidates, pick the one whose center is closest to the target
-      let bestMatch = candidates[0]
-      let bestDistance = Infinity
+      // Fallback to coordinate-based matching
+      if (!matchedFeature) {
+        // Find all features that contain the country coordinates in their bounding box
+        const candidates = geojson.features.filter(feature =>
+          isPointInBounds(countryLat, countryLon, feature.geometry.coordinates)
+        )
 
-      candidates.forEach(feature => {
-        const center = getPolygonCenter(feature.geometry.coordinates)
-        if (center) {
-          const distance = getDistance(countryLat, countryLon, center.lat, center.lon)
-          if (distance < bestDistance) {
-            bestDistance = distance
-            bestMatch = feature
-          }
+        if (candidates.length > 0) {
+          // If multiple candidates, pick the one whose center is closest to the target
+          let bestMatch = candidates[0]
+          let bestDistance = Infinity
+
+          candidates.forEach(feature => {
+            const center = getPolygonCenter(feature.geometry.coordinates)
+            if (center) {
+              const distance = getDistance(countryLat, countryLon, center.lat, center.lon)
+              if (distance < bestDistance) {
+                bestDistance = distance
+                bestMatch = feature
+              }
+            }
+          })
+
+          matchedFeature = bestMatch
         }
-      })
+      }
 
-      if (bestMatch) {
-        setCountryGeometry(bestMatch.geometry.coordinates)
+      if (matchedFeature) {
+        setCountryGeometry(matchedFeature.geometry.coordinates)
       }
     })
-  }, [countryLat, countryLon])
+  }, [countryLat, countryLon, countryName])
 
   if (!countryGeometry) return null
 

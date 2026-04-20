@@ -24,16 +24,19 @@ const CountryMarker = ({ name, lat, lon, onCountryClick, isTarget, showFeedback,
   const position = latLonToVector3(lat, lon)
   const [hovered, setHovered] = useState(false)
 
-  // For Level 4, make markers invisible but still clickable
+  // For Level 3 and 4, make markers invisible but still clickable
   if (!visible) {
     return (
       <mesh
         position={position}
-        onClick={() => onCountryClick(name)}
+        onClick={() => {
+          console.log('Clicked country:', name)
+          onCountryClick(name)
+        }}
         onPointerOver={() => setHovered(true)}
         onPointerOut={() => setHovered(false)}
       >
-        <sphereGeometry args={[0.2, 16, 16]} />
+        <sphereGeometry args={[0.3, 16, 16]} />
         <meshBasicMaterial
           color="#ffffff"
           opacity={0.001}
@@ -221,10 +224,12 @@ const GlobeScene = () => {
     const timeSinceLastClick = now - lastClickRef.current.time
     const sameTarget = lastClickRef.current.target === target
 
+    console.log('Click detected:', target, 'Time since last:', timeSinceLastClick, 'Same target:', sameTarget)
+
     lastClickRef.current = { time: now, target }
 
-    // If clicked the same target within 400ms, it's a double-click
-    return sameTarget && timeSinceLastClick < 400
+    // If clicked the same target within 500ms, it's a double-click
+    return sameTarget && timeSinceLastClick < 500
   }
 
   const handleCountryClick = (countryName) => {
@@ -281,6 +286,7 @@ const GlobeScene = () => {
         <HighlightedCountry
           countryLat={countries[currentCountry].lat}
           countryLon={countries[currentCountry].lon}
+          countryName={currentCountry}
           isCorrect={feedback.correct}
         />
       )}
