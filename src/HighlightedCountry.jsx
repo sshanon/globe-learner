@@ -103,10 +103,13 @@ const CountryBorderHighlight = ({ coordinates, color }) => {
     })
   }
 
-  // Render at multiple radii to create thick borders
-  processCoordinates(coordinates, 2.020)
-  processCoordinates(coordinates, 2.018)
-  processCoordinates(coordinates, 2.016)
+  // Render at multiple radii to create thick, bold borders
+  processCoordinates(coordinates, 2.025)
+  processCoordinates(coordinates, 2.023)
+  processCoordinates(coordinates, 2.021)
+  processCoordinates(coordinates, 2.019)
+  processCoordinates(coordinates, 2.017)
+  processCoordinates(coordinates, 2.015)
 
   if (lineSegments.length === 0) return null
 
@@ -126,7 +129,7 @@ const CountryBorderHighlight = ({ coordinates, color }) => {
             color={color}
             opacity={1.0}
             transparent={false}
-            linewidth={3}
+            linewidth={5}
           />
         </line>
       ))}
