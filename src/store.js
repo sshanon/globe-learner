@@ -3,7 +3,7 @@ import { getRandomCountry, getPointsForLevel, countries, CONTINENTS } from './co
 
 const useStore = create((set, get) => ({
   // Game state
-  currentLevel: 4,
+  currentLevel: 1,
   currentCountry: null,
   score: parseInt(localStorage.getItem('globelearn_score') || '0'),
   feedback: null, // { correct: boolean, country: string }
